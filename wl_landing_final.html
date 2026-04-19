@@ -388,7 +388,12 @@
           <button type="button" class="dest-btn" onclick="selectDest(this,'All of them!')">All of them!</button>
         </div>
 
-        <input type="hidden" name="MERGE7" id="mce-MERGE7" value="">
+        <!-- Mailchimp group checkboxes — hidden, set by JS -->
+        <input type="checkbox" name="group[7156][1]"  id="group_lobitos"  value="1" style="display:none;">
+        <input type="checkbox" name="group[7156][2]"  id="group_dakar"    value="1" style="display:none;">
+        <input type="checkbox" name="group[7156][4]"  id="group_siargao"  value="1" style="display:none;">
+        <input type="checkbox" name="group[7156][8]"  id="group_salvador" value="1" style="display:none;">
+        <input type="checkbox" name="group[7156][16]" id="group_all"      value="1" style="display:none;">
 
         <div class="mc-hidden" aria-hidden="true">
           <input type="text" name="b_7738fbf11b96341fc7db4bc70_6f018dcfca" tabindex="-1" value="">
@@ -432,26 +437,34 @@
 </div>
 
 <script>
-var destFlags = {
-  'Lobitos': '🇵🇪 Lobitos, Peru',
-  'Dakar': '🇸🇳 Dakar, Senegal',
-  'Siargao': '🇵🇭 Siargao, Philippines',
-  'Salvador': '🇸🇻 Salvador?',
-  'All of them!': '🌍 All destinations'
+var destMap = {
+  'Lobitos':     { id: 'group_lobitos',  label: '🇵🇪 Lobitos, Peru' },
+  'Dakar':       { id: 'group_dakar',    label: '🇸🇳 Dakar, Senegal' },
+  'Siargao':     { id: 'group_siargao',  label: '🇵🇭 Siargao, Philippines' },
+  'Salvador':    { id: 'group_salvador', label: '🇸🇻 Salvador?' },
+  'All of them!':{ id: 'group_all',      label: '🌍 All destinations' }
 };
 
 function selectDest(btn, value) {
   document.querySelectorAll('.dest-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('mce-MERGE7').value = value;
+  // Uncheck all, check selected
+  Object.values(destMap).forEach(function(d) {
+    document.getElementById(d.id).checked = false;
+  });
+  if (destMap[value]) {
+    document.getElementById(destMap[value].id).checked = true;
+  }
+  // Store for confirmation message
+  window._selectedDest = value;
 }
 
 document.getElementById('mc-embedded-subscribe-form').addEventListener('submit', function() {
-  var dest = document.getElementById('mce-MERGE7').value;
-  if (dest && destFlags[dest]) {
+  var dest = window._selectedDest;
+  if (dest && destMap[dest]) {
     var destEl = document.getElementById('success-dest');
     if (destEl) {
-      destEl.textContent = destFlags[dest];
+      destEl.textContent = destMap[dest].label;
       destEl.style.display = 'inline-block';
     }
   }
